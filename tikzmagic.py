@@ -270,7 +270,9 @@ class TikzMagics(Magics):
         tex = []
         tex.append('''
 \\documentclass[convert={%(add_params)ssize=%(width)sx%(height)s,outext=.png},border=0pt]{standalone}
-\\usepackage{tikz}
+\\usepackage{xcolor}
+\\usepackage{tikz,tkz-euclide}
+\\usetkzobj{all}
         ''' % locals())
         
         if tikz_library is not None:
