@@ -327,15 +327,15 @@ class TikzMagics(Magics):
             copy(image_filename, args.save)
 
         rmtree(plot_dir)
-
-        for source, data in display_data:
+ 
+        for tag, disp_d in display_data:
             if plot_format == 'svg':
-                # isolate data in an iframe, to prevent clashing glyph declarations in SVG
-                self._publish_display_data(source)#  #nosmartindent HACK, data, metadata={'isolated' : 'true'})
+                # isolate data in an iframe, to prevent clashing glyph declarations in SVG 
+                self._publish_display_data(source=tag, data=disp_d, metadata={'isolated' : 'true'})
             else:
-                self._publish_display_data(source, data)
-
-
+                self._publish_display_data(source=tag, data=disp_d, metadata=None)
+ 
+ 
 __doc__ = __doc__.format(
     TIKZ_DOC = ' '*8 + TikzMagics.tikz.__doc__,
     )
