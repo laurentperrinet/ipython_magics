@@ -52,3 +52,4 @@ docs/_build/
 
 # PyBuilder
 target/
+tikzmagic_test-checkpoint.ipynb
