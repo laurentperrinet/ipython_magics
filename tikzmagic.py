@@ -267,7 +267,7 @@ class TikzMagics(Magics):
         if args.tikzpicture is not None:
             tikzpicture_args = ','+args.tikzpicture.replace("'",'')
         else:
-            tikzpicture_args = None
+            tikzpicture_args = ''
  
         add_params = ""
         
