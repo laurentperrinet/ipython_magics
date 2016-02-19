@@ -67,7 +67,7 @@ class TikzMagics(Magics):
         self._publish_display_data = publish_display_data
  
  
-    def _fix_gnuplot_svg_size(self, image, size=None):
+    def _fix_gnuplot_svg_size(self, image, size=None, scale=1):
         """
         GnuPlot SVGs do not have height/width attributes.  Set
         these to be the same as the viewBox, so that the browser
@@ -88,9 +88,9 @@ class TikzMagics(Magics):
             width, height = size
         else:
             width, height = viewbox[2:]
- 
-        svg.setAttribute('width', '%dpx' % width)
-        svg.setAttribute('height', '%dpx' % height)
+
+        svg.setAttribute('width', '%dpx' % int(float(width)*scale))
+        svg.setAttribute('height', '%dpx' % int(float(height)*scale))
         return svg.toxml()
     
     
@@ -178,6 +178,16 @@ class TikzMagics(Magics):
         '-S', '--save', action='store',
         help='Save a copy to "filename".'
         )
+    @argument(
+        '-tp', '--tikzpicture', action='store',
+        help='Add arbitrary arguments to the \\begin{tikzpicture} call.'
+        )
+    @argument(
+        '-svgsc', '--svgscale', action='store',
+        help='Scale the displayed svg in the notebook view - ' +\
+                'Not the same as tikz scaling used by -sc option.'
+        )
+
  
     @needs_local_scope
     @argument(
@@ -259,6 +269,16 @@ class TikzMagics(Magics):
             tikz_library = args.library.split(',')
         else:
             tikz_library = None
+
+        if args.tikzpicture is not None:
+            tikzpicture_args = ','+args.tikzpicture.replace("'",'')
+        else:
+            tikzpicture_args = ''
+ 
+        if args.svgscale is not None:
+            svgscale = float(args.svgscale)
+        else:
+            svgscale = 1
  
         add_params = ""
         
@@ -283,7 +303,7 @@ class TikzMagics(Magics):
         
         tex.append('''
 \\begin{document}
-\\begin{tikzpicture}[scale=%(scale)s]
+\\begin{tikzpicture}[scale=%(scale)s%(tikzpicture_args)s]
         ''' % locals())
         
         tex.append(code)
@@ -316,7 +336,10 @@ class TikzMagics(Magics):
             plot_mime_type = _mimetypes.get(plot_format, 'image/%s' % (plot_format))
             width, height = [int(s) for s in size.split(',')]
             if plot_format == 'svg':
-                image = self._fix_gnuplot_svg_size(image, size=(width, height))
+                if args.size == None:
+                    image = self._fix_gnuplot_svg_size(image, size=None, scale=svgscale)
+                else:
+                    image = self._fix_gnuplot_svg_size(image, size=(width, height))
             display_data.append((key, {plot_mime_type: image}))
  
         except IOError:
