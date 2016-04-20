@@ -291,6 +291,7 @@ class TikzMagics(Magics):
         tex.append('''
 \\documentclass[convert={%(add_params)ssize=%(width)sx%(height)s,outext=.png},border=0pt]{standalone}
 \\usepackage{xcolor}
+\\usepackage{helvet}
 \\usepackage{tikz,tkz-euclide}
 \\usetkzobj{all}
         ''' % locals())
